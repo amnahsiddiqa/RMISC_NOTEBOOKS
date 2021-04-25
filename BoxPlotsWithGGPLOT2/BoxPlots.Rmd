@@ -1,0 +1,249 @@
+---
+title: "Boxplots"
+output: html_notebook
+---
+
+
+```{r}
+library(ggplot2)
+# Data Wrangling ----------------------------------------------------------
+setwd("/Users/siddia/Box/Plots")
+#write the file for direct 
+df.QN.long<-read.delim("//Users/siddia/Box/Plots/Duplicated.tsv")
+#write.table(df.QN.long,file="/Users/siddia/Box/Plots/Duplicated.tsv",sep="\t",row.names=FALSE)
+
+#verify
+length(unique(df.QN.long$GenesSet))
+#15 Clusters 
+
+df.QN.long$GenesSet<- factor(df.QN.long$GenesSet, levels=c(   "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "A", "B", "C"))
+
+
+
+
+# Plot Visualization ------------------------------------------------------
+
+
+#pdf(file="/Users/siddia/Google Drive/1-FluVaccinesStudyManuscript/Figure2/Figure2b/Output/Figure2b.pdf",
+#    width=4.6,
+#    height=8.2)
+
+
+# Box plot
+ggplot(df.QN.long, aes(x=Rsq, y=GenesSet))+
+  geom_boxplot(fill="grey",  alpha=0.5)+                                        # boxplot fill color
+  theme_set(theme_bw(base_size  = 6, base_family = "Times"))+                             # base font family and size
+  theme(text=element_text(color = "black"),                                               # only axis titles font color
+        axis.text = element_text(color = "black"))+                                       # axis  font color
+  ylab("Genes Sets")+                                                                     # y-axis labels 
+  xlab (expression(paste("R"^"2")))+                                                      # x-axis label
+  theme(axis.title = element_text(size = 8))                                              # Axis titles font size
+
+
+#dev.off()
+
+
+#saving a plot Command 
+
+```
+
+#TLDR: 
+prefer to use personalized themes and just replace their elements like below
+
+```{r}
+#reference: https://rpubs.com/mclaire19/ggplot2-custom-themes
+#https://ggplot2.tidyverse.org/reference/theme_get.html
+
+#when we use theme () meaning pass anything in that we overrise current thme 
+# we can use it with other themes 
+
+personal_theme <- function() {
+    font<-"Arial"
+    theme_bw()%+replace%
+  
+  
+  theme(
+
+   #text elements
+      plot.title = element_text(             #title
+                   family = font,            #set font family
+                   size = 20,                #set font size
+                   face = 'bold',            #bold typeface
+                   hjust = 0,                #left align
+                   vjust = 2),               #raise slightly
+      
+      plot.subtitle = element_text(          #subtitle
+                   family = font,            #font family
+                   size = 14),               #font size
+      
+      plot.caption = element_text(           #caption
+                   family = font,            #font family
+                   size = 9,                 #font size
+                   hjust = 1),               #right align
+      
+      axis.title = element_text(             #axis titles
+                   family = font,            #font family
+                   size = 10),               #font size
+      
+      axis.text = element_text(              #axis text
+                   family = font,            #axis famuly
+                   size = 9),                #font size
+      
+      axis.text.x = element_text(            #margin for axis text
+                    margin=margin(5, b = 10))
+      
+      #since the legend often requires manual tweaking 
+      #based on plot content, don't define it here
+    )
+  
+}
+
+
+
+
+
+
+
+# Box plot
+ggplot(df.QN.long, aes(x=Rsq, y=GenesSet))+
+  geom_boxplot(fill="grey",  alpha=0.5)+                                        # boxplot fill color
+  ylab("Genes Sets")+                                                                     # y-axis labels 
+  xlab (expression(paste("R"^"2")))+   
+  personal_theme()
+```
+
+
+
+
+
+
+
+### Titles Labels fonts and sizes   
+
+```{r}
+
+# Box plot
+ggplot(df.QN.long, aes(x=Rsq, y=GenesSet))+
+  geom_boxplot(fill="grey",  alpha=0.5, #coef=1e30,
+               
+               outlier.colour = "white",
+                 outlier.shape = 24,
+                 outlier.fill = "white",
+                 outlier.size = 3 # not actually needed
+)+                                        # boxplot fill color
+  
+  theme_set(theme_bw(base_size  = 6, base_family = "Times"))+                             # base font family and size
+  theme(text=element_text(color = "black", size=18))  +                                        # both x and y axes  axis both together 
+        # axis.title.y =element_text(color = "red", size=18),                               # for only y or x axis title 
+        # axis.title.x =element_text(color = "Green", size=15),                             # for only y or x axis title 
+        # axis.text = element_text(color = "red", size=10))+                                       # axis  font color
+  ylab("Genes Sets")+                                                                     # y-axis labels 
+  xlab (expression(paste("R"^"2")))+                                                      # x-axis label
+  theme(axis.title = element_text(size = 8))                                              # Axis titles font size
+
+
+```
+
+
+### Fonts families 
+We use theme() to tweak the display of an existing theme.
+
+```{r}
+
+theme_bw(base_size=12, base_family = "")
+
+```
+
+
+
+### Font realated things 
+
+TLDR:We need for mac to get the font we need to use in ggplot2
+
+library(extrafont)
+font_import()
+fonts()
+
+```{r}
+#https://github.com/wch/extrafont
+#install.packages('extrafont')
+library(extrafont)
+#After intalling the package extraFont  first time 
+# have to run font_import like this (it took like 5 minutes)
+#do not skip this part
+font_import()# import all fonts on my system
+#loadfonts(device = "win")#for windows
+#loadfonts()#for mac
+
+#see hat fonts you have available with the command windowsFonts()
+#windowsFonts()
+fonts()#display present fonts 
+
+
+
+```
+
+You can find the name of a font you need for the family parameter of element_text with the following code snippet:
+```{r}
+names(wf[wf=="Arial"])
+```
+
+
+
+```{r}
+# Box plot
+ggplot(df.QN.long, aes(x=Rsq, y=GenesSet))+
+  geom_boxplot(fill="grey",  alpha=0.5, coef=1e30,
+  
+  theme_set(theme_bw(base_size  = 6, base_family = "Arial"))+                             # base font family and size
+  theme(text=element_text(color = "black", size=18))  +                                        # both x and y axes  axis both together 
+        # axis.title.y =element_text(color = "red", size=18),                               # for only y or x axis title 
+        # axis.title.x =element_text(color = "Green", size=15),                             # for only y or x axis title 
+        # axis.text = element_text(color = "red", size=10))+                                       # axis  font color
+  ylab("Genes Sets")+                                                                     # y-axis labels 
+  xlab (expression(paste("R"^"2")))                                                      # x-axis label
+  #theme(axis.title = element_text(size = 8))                                              # Axis titles font size
+
+```
+
+
+
+### problems related to Outlier 
+
+How to deal eith their visualisations 
+couple of options discussed here 
+
+Option 1: 
+use the color option to matcvh the outliers with background
+```{r}
+ggplot(df.QN.long, aes(x=Rsq, y=GenesSet))+
+geom_boxplot(fill="grey",  alpha=0.5, #coef=1e30,
+               outlier.colour = "white",
+                 #outlier.shape = 24,
+                 outlier.fill = "white",
+                 #outlier.size = 3 # not actually needed
+)
+
+
+```
+
+
+second use the high limit then default 1.5 in coef option to do it.
+
+Caveat is that it extends the whiskers and not rescale your plot.
+
+It force the whiskers to extend to the max and min values, you can tweak the coef argument. Default value for coef is 1.5 (i.e. default length of the whiskers is 1.5 times the IQR).
+```{r}
+ggplot(df.QN.long, aes(x=Rsq, y=GenesSet))+
+geom_boxplot(fill="grey",  alpha=0.5, coef=1e30)
+
+ggplot(df.QN.long, aes(x=Rsq, y=GenesSet))+
+geom_boxplot(fill="grey",  alpha=0.5, coef=1)
+```
+
+
+
+
+#References
+For outlers related :https://stackoverflow.com/questions/5677885/ignore-outliers-in-ggplot2-boxplot
+Font of axis titles etc: https://statisticsglobe.com/increase-font-size-in-plot-in-r
