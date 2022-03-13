@@ -4,6 +4,62 @@
 
 
 
+#dependencies
+library(ImmuneSpaceR)
+library(Rlabkey)
+library(dplyr)
+library(Biobase)#-->for exprs function 
+library(readr)#for write_tsv
+library(forcats)
+library(tidyr)
+library(preprocessCore)
+library(plyr)
+ colMeans(is.na(out)) != 1]
+      
+      #remove columns with all NAS
+    }
+    
+    
+    matrix.out <- paste(study,type,sep="_")
+    matrix.out <- paste(matrix.out,"data_matrix.txt",sep="_")
+    write_tsv(out,matrix.out)
+    #    return(out)
+  } else {
+    # If there is nothing to process keep going
+    print(paste("Study",study,"has no data of type",type,sep=" "))
+  }
+}
+
+
+
+
+####################Main Call#######################
+
+for (i in 1:length(studies)){
+  #its study name too so i am directly passing this in required pathnames and study name in arguments
+  subDir=studies[i]
+  #if study folder exist move into it and fetch data and set back wd
+  if (file.exists(file.path(mainDir, subDir))) 
+  {
+    print(paste0(subDir," exists in ",mainDir," and is a directory"))
+    setwd(file.path(mainDir, subDir))
+    expression_fetch(subDir)
+    get_biosample(subDir)
+    antibody_fetch(subDir)
+    setwd(mainDir)
+  } 
+  #else create one , move into it and fetch data and set back wd
+  else
+  {
+    dir.create(file.path(mainDir, subDir))
+    setwd(file.path(mainDir, subDir))
+    expression_fetch(subDir)
+    get_biosample(subDir)
+    antibody_fetch(subDir)
+    setwd(mainDir)
+  }
+  #setwd(file.path(mainDir, subDir))
+}
 
 
 
